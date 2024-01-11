@@ -162,9 +162,12 @@ def match_player_stat(player_name):
         # adjust sum to mean for Total row
         total.iloc[3] = total.iloc[1] / total.iloc[0]
         for i in range(4,14):
-            column_name = df_raw.columns[i+11]
-            column_sum = df_raw[column_name].sum()
-            total.iloc[i] = column_sum / total.iloc[0]
+            if i == 8 or i == 9:
+                continue
+            else:
+                column_name = df_raw.columns[i+11]
+                column_sum = df_raw[column_name].sum()
+                total.iloc[i] = column_sum / total.iloc[0]
         # calculate KDA
         total.iloc[7] = (total.iloc[4] + total.iloc[6]) / total.iloc[5]
         # add Total row to the table
