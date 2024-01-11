@@ -1,0 +1,12 @@
+# test file
+test.py
+test.csv
+output.xlsx
+output - 複製.xlsx
+
+# virtual environment
+.venv
+.test
+
+# code-workspace
+LOLMatchData_Flask.code-workspace

@@ -1,0 +1,27 @@
+form{
+    padding:10px
+}
+p{
+    margin-left: 10px;
+    margin-top: 10px;
+    margin-bottom: 0px;
+}
+h4,a{
+    padding:10px
+}
+span{
+    padding:10px
+}
+.flex-container{
+    display:flex;
+    flex-wrap: nowrap;
+}
+.flex-container>div{
+    margin: 10px;
+}
+table{
+    border-collapse:collapse; 
+    table-layout:fixed;
+    text-align: center;
+    word-wrap: break-word;
+}

@@ -1,0 +1,60 @@
+{% extends "base.html"%}
+
+{% block CSS %}
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style_match.css') }}">
+
+{% endblock %}
+
+{% block title %}Match - All - stat{% endblock %}
+
+{% block content %}
+    <div style="padding:10px">
+        <span style="border: solid 1px">
+            <a class="button" href="/match/">All</a>
+            <a href="/match/大涼粉">大涼粉</a>
+            <a href="/match/全ロス35P">全ロス35P</a>
+            <a href="/match/tobyto">tobyto</a>
+            <a href="/match/国士無双">国士無双</a>
+            <a href="/match/努力過的人都是戰士">努力過的人都是戰士</a>
+            <a href="/match/OnewayHaku">OnewayHaku</a>
+            <a href="/match/DrDolphin">DrDolphin</a>
+        </span>
+    </div>
+        
+        
+    {% block span %}
+        <span style="display: flex">
+            <h5 >All</h5>
+            <a href="/match/">STAT</a>
+            <a href="/match/data">DATA</a>
+        </span>
+    {% endblock %}
+
+    {% block match %}
+        <!-- display player database -->
+        {{df|safe}}
+    {% endblock %}
+
+
+{% endblock %}
+
+{% block script %}
+<script>
+    const element = document.getElementsByTagName("table")[0];
+    element.setAttribute('id','DataTable');
+    element.setAttribute('class','table table-striped');
+
+    $('#DataTable').dataTable( {
+        order: [[2, 'desc']],
+        <!-- paging: false, -->
+        columnDefs: [
+        {target: [0], visible: false, searchable: false,},
+        {width : "500px", targets: [0]},
+        ],
+        lengthMenu: [
+                [50, 100, -1],
+                [50, 100, 'All']
+        ],
+    } );
+</script>
+{% endblock %}

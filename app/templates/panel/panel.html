@@ -1,0 +1,20 @@
+{% extends "base.html"%}
+
+{% block CSS %}
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style_panel.css') }}">
+{% endblock %}
+
+{% block title %}Panel{% endblock %}
+
+{% block content %}
+<div style="padding:10px">
+    <span style="border: solid 1px">
+        <a href="/panel/">Update</a>
+        <a href="/panel/add_player">Add player</a>
+    </span>
+</div>
+
+{% block panel %}
+{% endblock %}
+
+{% endblock %}

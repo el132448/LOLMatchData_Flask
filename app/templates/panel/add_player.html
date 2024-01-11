@@ -1,0 +1,105 @@
+{% extends "panel.html"%}
+
+{% block title %}Add player{% endblock %}
+
+{% block panel %}
+<div class="flex-container">
+    <!-- add new player -->
+    <div style="width: 15%">
+        <form method="POST">
+            <h4>Add new player</h4>
+            <label for="id">id</label>
+            <input style="width:100%"
+                type="text" 
+                class="form-control" 
+                id="id" 
+                name="id"
+                placeholder="Enter id">
+            <label for="summoner_name">summoner name</label>
+            <input style="width:100%"
+                type="text" 
+                class="form-control" 
+                id="summoner_name" 
+                name="summoner_name" 
+                placeholder="Enter summoner name">
+            <label for="tag_line">tag line without #</label>
+            <input style="width:100%"
+                type="text" 
+                class="form-control" 
+                id="tag_line" 
+                name="tag_line" 
+                placeholder="Enter tag line">
+            <label for="region">region for ACCOUNT-V1 (asia)</label>
+            <input style="width:100%"
+                type="text"
+                class="form-control" 
+                id="region" 
+                name="region" 
+                placeholder="Enter region"
+                value="asia">
+            <label for="mass_region">mass region for MATCH-V5 (sea)</label>
+            <input style="width:100%"
+                type="text" 
+                class="form-control" 
+                id="mass_region" 
+                name="mass_region" 
+                placeholder="Enter mass region"
+                value="sea">
+            <label for="queue_id">queue id (450)</label>
+            <input style="width:100%"
+                type="text"
+                class="form-control" 
+                id="queue_id" 
+                name="queue_id" 
+                placeholder="Enter queue id"
+                value="450">
+            <br>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+
+    <!-- display player database -->
+    <div style="width: 85%">
+        <table id="DataTable" class="table table-striped">
+            <thead>
+                <tr>
+                    <th>id</th>
+                    <th>summoner &#10;name</th>
+                    <th>tag line</th>
+                    <th>region</th>
+                    <th>mass &#10;region</th>
+                    <th>queue id</th>
+                    <th>puuid</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for player in db_player %}
+                    <tr>
+                        <td>{{player.id}}</td>
+                        <td>{{player.summoner_name}}</td>
+                        <td>{{player.tag_line}}</td>
+                        <td>{{player.region}}</td>
+                        <td>{{player.mass_region}}</td>
+                        <td>{{player.queue_id}}</td>
+                        <td>{{player.puuid}}</td>
+                    </tr>
+                {% endfor %}
+            </tfoot>
+        </table>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block script %}
+    <script>
+        $('#DataTable').dataTable( {
+        paging: false,
+        searching: false,
+        columnDefs: [
+            {width : "300px", targets: [1]},
+            {width : "100px", targets: [0,2,3,4,5]},
+        ],
+        } );
+    </script>
+{% endblock %}

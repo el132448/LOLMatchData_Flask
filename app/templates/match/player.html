@@ -1,0 +1,32 @@
+{% extends "match.html"%}
+
+{% block title %}Match - {{player.summoner_name}} - stat {% endblock %}
+
+{% block span %}
+    <span style="display: flex">
+        <h5>{{player.summoner_name}}</h5>
+        <a href="/match/{{player.summoner_name}}">STAT</a>
+        <a href="/match/{{player.summoner_name}}/data">DATA</a>
+    </span>
+{% endblock %}
+
+{% block match %}
+    <!-- display player database -->
+    {{df|safe}}
+{% endblock %}
+
+{% block script %}
+    <script>
+        const element = document.getElementsByTagName("table")[0];
+        element.setAttribute('id','DataTable');
+        element.setAttribute('class','table table-striped');
+
+        $('#DataTable').dataTable( {
+            order: [[2, 'desc']],
+            paging: false,
+            columnDefs: [
+            {target: [0], visible: false, searchable: false,},
+        ],
+        } );
+    </script>
+{% endblock %}

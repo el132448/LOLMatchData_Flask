@@ -1,0 +1,73 @@
+{% extends "player.html"%}
+
+{% block title %}Match - {{player.summoner_name}} - data{% endblock %}
+
+{% block match %}
+    <!-- display player database -->
+    <table id="DataTable" class="table table-striped">
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>match id</th>
+                <th>date</th>
+                <th>start time</th>
+                <th>time</th>
+                <th>length</th>
+                <th>mode</th>
+                <th>game version</th>
+                <th>team</th>
+                <th>win</th>
+                <th>early surrender</th>
+                <th>surrender</th>
+                <th>summoner name</th>
+                <th>level</th>
+                <th>champion</th>
+                <th>kills</th>
+                <th>deaths</th>
+                <th>assists</th>
+                <th>KDA</th>
+                <th>quadra kills</th>
+                <th>penta kills</th>
+                <th>damage to champ</th>
+                <th>damage taken</th>
+                <th>gold earned</th>
+                <th>minions killed</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for match in db_player_match %}
+                <tr>
+                    {% for column in match %}
+                    <td>{{column}}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </tfoot>
+    </table>
+
+{% endblock %}
+
+
+{% block script %}
+    <script>
+        $('#DataTable').dataTable( {
+            order: [[0, 'desc']],
+            dom: 'lpftrip',
+            columnDefs: [
+                {target: [3,10], visible: false, searchable: false,},
+                ],
+            lengthMenu: [
+                [20, 50, 100, -1],
+                [20, 50, 100, 'All']
+            ]
+        } );
+    </script>
+    <!-- # old setting -->
+    <!-- {width : "140px", targets: [12]},
+                {width : "130px", targets: [1]},
+                {width : "125px", targets: [14]},
+                {width : "100px", targets: [2]},
+                {width : "75px", targets: [4,5,6,7,16,19,20,21,22,23,24]},
+                {width : "50px", targets: [17]},
+                {width : "40px", targets: "_all"}, -->
+{% endblock %}

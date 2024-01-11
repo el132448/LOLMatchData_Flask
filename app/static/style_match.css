@@ -1,0 +1,16 @@
+table.dataTable tbody th, table.dataTable tbody td {
+    padding: 0px;
+}
+h4,h5,a{
+    padding:10px
+}
+span{
+    padding:10px
+}
+table{
+    table-layout: auto;
+    width: 100%;
+}
+tbody, td, tfoot, th, thead, tr {
+    border-width: 1px;
+}
