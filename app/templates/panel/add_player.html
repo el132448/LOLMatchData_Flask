@@ -3,9 +3,10 @@
 {% block title %}Add player{% endblock %}
 
 {% block panel %}
-<div class="flex-container">
+<!-- class="flex-container" -->
+<div style="display:flex; flex-wrap: wrap;">
     <!-- add new player -->
-    <div style="width: 15%">
+    <div style="flex: 1;">
         <form method="POST">
             <h4>Add new player</h4>
             <label for="id">id</label>
@@ -59,7 +60,7 @@
     </div>
 
     <!-- display player database -->
-    <div style="width: 85%">
+    <div style="flex: 5;">
         <table id="DataTable" class="table table-striped">
             <thead>
                 <tr>
@@ -97,9 +98,14 @@
         paging: false,
         searching: false,
         columnDefs: [
-            {width : "300px", targets: [1]},
-            {width : "100px", targets: [0,2,3,4,5]},
+        {width : "200px", targets: [6]},
+        {width : "100px", targets: [1]},
+        {width : "40px", targets: [0,2,3,4,5]},
         ],
         } );
     </script>
+
+    <!--             {width : "40%", targets: [6]},
+            {width : "20%", targets: [1]},
+            {width : "5%", targets: [0,2,3,4,5]}, -->
 {% endblock %}

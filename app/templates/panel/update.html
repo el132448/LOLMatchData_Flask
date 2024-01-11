@@ -4,7 +4,7 @@
 
 {% block panel %}
 
-<p>Last update time : {{last_update_time}}</p>
+<p>Last update (HKT) : {{last_update_time}} </p>
 <form method="post">
     <button class="btn btn-primary" type="submit" id="updateBtn" onclick="updateButton()">
         Update
@@ -58,6 +58,9 @@
                         $('#updateBtn').text('Update');
                         clearInterval(intervalId);  // stop timer
                     }
+                    
+                    // redirect to panel
+                    window.location.replace("/panel");
                 },
                 error: function(error) {
                     console.error('Error checking button status:', error);

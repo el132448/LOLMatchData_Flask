@@ -1,6 +1,6 @@
 from . import db
 from sqlalchemy.sql import func
-from sqlalchemy import Table, text
+from sqlalchemy import Table, text, select
 from flask import flash
 import time, requests, datetime, pandas as pd
 
@@ -33,11 +33,21 @@ class Player(db.Model):
         self.endTime = int(time.time())
         self.df = pd.DataFrame() # empty DataFrame
         self.stat = {}
-        self.all_match_ids_list = []
+        self.match_ids_list = []
+        self.last_match_num_db = 0
 
         print(f'{summoner_name} with id = {id} has been instantiated')
 
     def get_match_ids(self):
+        print("=========================get_match_ids============================")
+        # get matchId from database
+        table_name = f'player_{self.id}'
+        db_matchId = query_table_by_name(table_name)
+        self.last_match_num_db = len(db_matchId) # which is also the id of the match data in db
+        if self.last_match_num_db > 0: # match data already in database
+            last_matchId = db_matchId[self.last_match_num_db-1][1]
+            print(f'last match in db for {self.summoner_name} is id = {self.last_match_num_db}, matchId = {last_matchId}')
+        
         i = 0
         while i < 100: # max 10000 match which is impossible
             api_url = (
@@ -47,13 +57,12 @@ class Player(db.Model):
             resp = requests.get(api_url)
             match_ids = resp.json()
             print(f'getting {self.summoner_name}\'s match_ids set {i}, result:{str(resp)}')
-            i = i + 1
 
             # Rate Limit hit
             if resp.status_code == 429:
                 print("Rate Limit hit, sleeping for 10 seconds (20 requests every 1 seconds & 100 requests every 2 minutes)")
                 time.sleep(10) 
-                continue # continue means start the loop again
+                continue # continue: start the loop again
             elif resp.status_code != 200:
                 print(f'error: get_match_ids resp.status_code != 200 ')
                 i = 101 # end the loop
@@ -61,10 +70,19 @@ class Player(db.Model):
                 print(f'getting {self.summoner_name}\'s match_ids, result: empty match_ids = [] (End)')
                 i = 101 # end the loop
             else:
+                # success, then compare the non-repeating match with the last match in db
                 for match in match_ids:
-                    self.all_match_ids_list.append(match)
-        print(f'all {self.summoner_name}\'s match_ids get! Number of matchs in the list = {len(self.all_match_ids_list)}')
-        # print(self.all_match_ids_list)
+                    if match == last_matchId:
+                        print(f'{match} is repeating with last match in db: {self.last_match_num_db} {last_matchId}')
+                        i = 101
+                        break # stop checking other match
+                    else:
+                        # append to a list for further requesting
+                        self.match_ids_list.append(match)
+                # counter added => loop continue
+                i = i + 1
+
+        print(f'all {self.summoner_name}\'s match_ids get! Number of matchs in the list = {len(self.match_ids_list)}')
 
     def get_match_data(self, match_id):
         api_url = (
@@ -91,12 +109,12 @@ class Player(db.Model):
         match_id = match_data['metadata']['matchId']
         print(f'Gathering {self.summoner_name}\'s match data of {match_id}')
 
+        id = match_num
+
         # get player_data from a match ID
         participants = match_data['metadata']['participants']
         player_index = participants.index(self.puuid)
-
         # extract infomation from match_data
-        id = match_num
         start_time = round(match_data['info']['gameStartTimestamp']/1000)
         date = str(datetime.datetime.fromtimestamp(start_time))[:10]
         time = str(datetime.datetime.fromtimestamp(start_time))[10:]
@@ -187,6 +205,7 @@ def instantiate_all_player():
     for player in player_table:
         player_obj = Player(player.id, player.summoner_name, player.tag_line, player.region, player.mass_region, player.queue_id, player.puuid)
         player_list.append(player_obj)
+    # print(f'player_list={player_list}')
     return player_list
 
 def query_table_by_name(table_name, filters=None):

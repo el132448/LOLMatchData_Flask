@@ -21,11 +21,12 @@ def master_update_function():
     # instantiate all player from database & get a list of all player
     player_list = instantiate_all_player()
     for player in player_list:
-        # get a list of all match of a player
+        # get a list of matchs to be run
         player.get_match_ids()
-        # total number of match
-        match_num = len(player.all_match_ids_list)
-        for match_id in player.all_match_ids_list:
+        # last match num of a player in db
+        match_num = len(player.match_ids_list) + player.last_match_num_db
+
+        for match_id in player.match_ids_list:
             # check if the match id is exist in database already
             table_name = f'player_{player.id}'
             filter_conditions = [f"matchId  = '{match_id}'"]
