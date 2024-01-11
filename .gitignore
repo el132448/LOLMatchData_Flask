@@ -3,6 +3,7 @@ test.py
 test.csv
 output.xlsx
 output - 複製.xlsx
+-- SQLite.sql
 
 # virtual environment
 .venv
