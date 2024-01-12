@@ -11,22 +11,124 @@
 {% endblock %}
 
 {% block match %}
+    <style>
+        .mode_filter{
+            margin: 5px;
+        }
+        label{
+            margin-bottom:0
+        }
+    </style>
+
+    <!-- form of game mode to choose -->
+    <form method="post" action="{{ url_for('match_blueprint.match_player_stat', player_name=player.summoner_name) }}" style="display:flex;flex-wrap: wrap;margin-left:10px">
+        <button type="submit">Filter</button>
+        <div class="mode_filter">
+            <input type="checkbox" name="game_modes[]" value="450" id="450"> 
+            <label for="450">450(ARAM)</label>
+        </div>
+        <div class="mode_filter">
+            <input type="checkbox" name="game_modes[]" value="420" id="420">
+            <label for="420"></label>420(5v5 Ranked Solo)</label>
+        </div>
+        <div class="mode_filter">
+            <input type="checkbox" name="game_modes[]" value="430" id="430">
+            <label for="430"></label>430 (5v5 Blind Pick)</label>
+        </div>
+        <div class="mode_filter">
+            <input type="checkbox" name="game_modes[]" value="440" id="440">
+            <label for="440">440 (5v5 Ranked Flex)</label>
+        </div>
+        <div class="mode_filter">
+            <input type="checkbox" name="game_modes[]" value="490">
+            <label for="490">490 (Normal Quickplay)</label>
+        </div>
+        <div class="mode_filter">
+            <input type="checkbox" name="game_modes[]" value="1300">
+            <label for="1300">1300 (Nexus Blitz)</label>
+        </div>
+        <div class="mode_filter">
+            <input type="checkbox" name="game_modes[]" value="1700">
+            <label for="1700">1700 (arena)</label>
+        </div>
+    </form>
+
+    <!-- plot win rate -->
+    <div style="margin:10px">
+        <button onclick="toggleChart()">Win Rate / time</button>
+        <canvas id="winRateChart" style="display:none"></canvas>
+    </div>
+
     <!-- display player database -->
     {{df|safe}}
 {% endblock %}
 
 {% block script %}
+    <!-- plot win rate script -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
     <script>
+        // DataTable
         const element = document.getElementsByTagName("table")[0];
         element.setAttribute('id','DataTable');
         element.setAttribute('class','table table-striped');
 
-        $('#DataTable').dataTable( {
+        var table = $('#DataTable').DataTable( {
             order: [[2, 'desc']],
             paging: false,
             columnDefs: [
             {target: [0], visible: false, searchable: false,},
-        ],
-        } );
+            ],
+        })
+        
+        // hide chart button
+        function toggleChart() {
+            var chart = document.getElementById('winRateChart');
+            if (chart.style.display === 'none') {
+                chart.style.display = 'block';
+            } else {
+                chart.style.display = 'none';
+            }
+        }
+
+        // plot win rate
+        var ctx = document.getElementById('winRateChart').getContext('2d');
+        var timeData = {{ time_data | tojson }};
+        var winRateData = {{ win_rate_data | tojson }};
+    
+        var winRateChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: timeData,
+                datasets: [{
+                    label: 'Win Rate',
+                    data: winRateData,
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 2,
+                    fill: false
+                }]
+            },
+            options: {
+                scales: {
+                    x: [{
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'yyyy/MM/dd'
+                            }
+                        }
+                    }],
+                    y: {
+                        beginAtZero: false,
+                        suggestedMin: 45,
+                        suggestedMax: 50
+                    }
+                }
+            }
+        });     
+        console.log("Min:", winRateChart.options.scales.yAxes[0].ticks.min);
+        console.log("Max:", winRateChart.options.scales.yAxes[0].ticks.max);
     </script>
 {% endblock %}

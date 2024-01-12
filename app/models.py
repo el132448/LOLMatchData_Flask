@@ -1,6 +1,6 @@
 from . import db
 from sqlalchemy.sql import func
-from sqlalchemy import Table, text, select
+from sqlalchemy import Table, text, select, or_
 from flask import flash
 import time, requests, datetime, pandas as pd
 
@@ -11,7 +11,7 @@ class System(db.Model):
 class Player(db.Model):
     id = db.Column(db.Integer, primary_key=True, unique=True)
     summoner_name = db.Column(db.String(1000), unique=True)
-    tag_line = db.Column(db.Integer)
+    tag_line = db.Column(db.String(100))
     region = db.Column(db.String(100))
     mass_region = db.Column(db.String(100))
     queue_id = db.Column(db.Integer)
@@ -43,16 +43,24 @@ class Player(db.Model):
         # get matchId from database
         table_name = f'player_{self.id}'
         db_matchId = query_table_by_name(table_name)
-        self.last_match_num_db = len(db_matchId) # which is also the id of the match data in db
-        if self.last_match_num_db > 0: # match data already in database
-            last_matchId = db_matchId[self.last_match_num_db-1][1]
+        len_matchId = len(db_matchId)
+        if len_matchId > 0: # match data already in database
+            self.last_match_num_db = db_matchId[len_matchId-1][0] # which is also the id of the match data in db
+            last_matchId = db_matchId[len_matchId-1][1]
             print(f'last match in db for {self.summoner_name} is id = {self.last_match_num_db}, matchId = {last_matchId}')
+        else:
+            last_matchId = "null"
         
         i = 0
         while i < 100: # max 10000 match which is impossible
+            if self.queue_id == 0: # all type of match
+                queue = ""
+            else:
+                queue = f'queue={str(self.queue_id)}&'
+
             api_url = (
                 "https://" + self.mass_region + ".api.riotgames.com/lol/match/v5/matches/by-puuid/" +
-                self.puuid + "/ids?queue=" + str(self.queue_id) + "&start=" + str(i * 100) + 
+                self.puuid + "/ids?" + queue + "start=" + str(i * 100) + 
                 "&count=" + str(self.no_games) + "&api_key=" + self.api_key)
             resp = requests.get(api_url)
             match_ids = resp.json()
@@ -122,7 +130,7 @@ class Player(db.Model):
         # empty match data for special case: TW2_92712884
         if match_data['info']['participants'] == []:
             length = "0"
-            mode = "null"
+            queueId = 0
             game_version = "0"
             team = "null"
             win = 0
@@ -144,8 +152,8 @@ class Player(db.Model):
         else:
             player_data = match_data['info']['participants'][player_index]
 
-            length = str(datetime.timedelta(seconds=int(player_data['challenges']['gameLength'])))
-            mode = match_data['info']['gameMode']
+            length = str(datetime.timedelta(seconds=int(match_data['info']['gameDuration'])))
+            queueId = match_data['info']['queueId']
             game_version = match_data['info']['gameVersion']
             team = 'blue' if player_data['teamId'] == 100 else 'red'
             win = 1 if player_data['win'] else 0
@@ -170,7 +178,7 @@ class Player(db.Model):
         
         # add them to data
         data_to_insert = [
-            id,match_id,date,start_time,time,length,mode,game_version,team,win,early_surrender,
+            id,match_id,date,start_time,time,length,queueId,game_version,team,win,early_surrender,
             surrender,summoner_name,summoner_level,champion,kills,deaths,assists,KDA,
             quadra_kills,penta_kills,damage_to_champions,damage_taken,gold_earned,minions_killed
             ]
@@ -218,8 +226,8 @@ def query_table_by_name(table_name, filters=None):
 
             # 添加過濾條件 e.g. filter_conditions = [f"matchId  = '{match_id}'"]
             if filters:
-                for condition in filters:
-                    query = query.where(text(condition))
+                filter_conditions = [text(condition) for condition in filters]
+                query = query.where(or_(*filter_conditions))
 
             # 執行查詢並獲取結果
             result = connection.execute(query).fetchall()
@@ -240,7 +248,7 @@ def create_player_table(id):
                 'date': db.Column(db.String(100)),
                 'time': db.Column(db.String(100)),
                 'length': db.Column(db.String(100)),
-                'mode': db.Column(db.String(100)),
+                'queueId':  db.Column(db.Integer),
                 'game_version': db.Column(db.String(100)),
                 'team': db.Column(db.String(100)),
                 'win': db.Column(db.String(100)),

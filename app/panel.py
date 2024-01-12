@@ -14,6 +14,12 @@ def panel():
     system = System.query.all()
     if system:
         last_update_time = system[0].last_update_time
+    else:
+        # create the data in table
+        last_update_time = 0
+        create_update_time = System(id=1,last_update_time=last_update_time)
+        db.session.add(create_update_time)
+        db.session.commit()
     return render_template('update.html', last_update_time=last_update_time)
 
 def master_update_function():
@@ -47,9 +53,10 @@ def master_update_function():
     system = System.query.all()
     now = datetime.now()
     dt_string = now.strftime("%Y-%m-%d %H:%M:%S")
-    system[0].last_update_time = dt_string
-    db.session.commit()
-    print(f"All match data is updated at {dt_string}!")
+    if system: # False when no player info in db
+        system[0].last_update_time = dt_string
+        db.session.commit()
+        print(f"All match data is updated at {dt_string}!")
 
 @panel_blueprint.route('/panel/update/', methods=['GET', 'POST'])
 def panel_update():

@@ -11,13 +11,9 @@
     <div style="padding:10px">
         <span style="display:flex; flex-wrap:wrap; border: solid 1px; width:100%">
             <a class="button" href="/match/">All</a>
-            <a href="/match/大涼粉">大涼粉</a>
-            <a href="/match/全ロス35P">全ロス35P</a>
-            <a href="/match/tobyto">tobyto</a>
-            <a href="/match/国士無双">国士無双</a>
-            <a href="/match/努力過的人都是戰士">努力過的人都是戰士</a>
-            <a href="/match/OnewayHaku">OnewayHaku</a>
-            <a href="/match/DrDolphin">DrDolphin</a>
+            {% for player in player_list %}
+                <a href="/match/{{player.summoner_name}}">{{player.summoner_name}}</a>
+            {% endfor %}
         </span>
     </div>
         
@@ -25,7 +21,7 @@
     {% block span %}
         <span style="display: flex">
             <h5 >All</h5>
-            <a href="/match/">STAT</a>
+            <a href="/match/">STAT(ARAM)</a>
             <a href="/match/data">DATA</a>
         </span>
     {% endblock %}
