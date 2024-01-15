@@ -1,6 +1,6 @@
 from . import db
 from flask import Blueprint, render_template, redirect, url_for, request
-from .models import Player, query_table_by_name
+from .models import Player, Team, query_table_by_name
 import pandas as pd
 from datetime import datetime
 
@@ -152,18 +152,8 @@ def groupby_matchId_champion():
 
     return df
 
-# All match team stat
-@match_blueprint.route('/match/team/', methods=['GET', 'POST'])
-def match_team():
+def get_team_type_win_rate():
     df = groupby_matchId_champion()
-    df = df.to_html() 
-    return render_template('match_team.html', df=df, player_list=Player.query.all())
-
-# by team type
-@match_blueprint.route('/match/team_type/', methods=['GET', 'POST'])
-def match_team_type():
-    df = groupby_matchId_champion()
-
     # team type: Fighter, Tank, Mage, Assassin, Marksman, Support
     team_tag_list =[]
     for index, row in df.iterrows():
@@ -219,6 +209,14 @@ def match_team_type():
     df['count'] = df['count'].astype('int')
 
     df = df.reset_index()
+
+    # write into db
+    df.to_sql(name='team', con=db.engine, if_exists='replace', index_label='id')
+
+# by team type
+@match_blueprint.route('/match/team_type/', methods=['GET', 'POST'])
+def match_team_type():
+    df = pd.read_sql('team', con=db.engine)
     
     if request.method == 'POST':
         selected_value = int(request.form['filterValue'])
@@ -228,6 +226,13 @@ def match_team_type():
     df = df.to_html()
 
     return render_template('match_team_type.html', df=df, player_list=Player.query.all())
+
+# All match team stat
+@match_blueprint.route('/match/team/', methods=['GET', 'POST'])
+def match_team():
+    df = groupby_matchId_champion()
+    df = df.to_html() 
+    return render_template('match_team.html', df=df, player_list=Player.query.all())
 
 # get all player's match data into one list
 def get_all_player_match():

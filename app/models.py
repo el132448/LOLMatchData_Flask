@@ -201,9 +201,14 @@ class Champion(db.Model):
     name = db.Column(db.String(1000), unique=True)
     tag1 = db.Column(db.String(1000))
     tag2 = db.Column(db.String(1000))
-    
-    
 
+class Team(db.Model):
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    team_type = db.Column(db.String(1000))
+    count = db.Column(db.Integer)
+    win = db.Column(db.Integer)
+    win_rate = db.Column(db.Float(100))
+    
 def get_puuid(summoner_name, tag_line, region):
     api_url = ("https://"+ region + ".api.riotgames.com/riot/account/v1/accounts/by-riot-id/" + summoner_name + "/" + tag_line + "?api_key=RGAPI-d0df3f5e-06ee-4b76-ac3c-a2c93d3651aa")
     resp = requests.get(api_url)

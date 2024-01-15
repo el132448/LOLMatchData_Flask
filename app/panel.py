@@ -4,6 +4,7 @@ from . import db
 from sqlalchemy import Table, update
 import threading, requests
 from datetime import datetime
+from .match import get_team_type_win_rate
 
 panel_blueprint = Blueprint('panel_blueprint', __name__, template_folder="templates/panel", static_folder="static")
 
@@ -48,6 +49,9 @@ def master_update_function():
     
     # update champion database
     # update_champion_db()
+            
+    # update team_type_win_rate
+    get_team_type_win_rate()
             
     # update last update time in database
     system = System.query.all()
