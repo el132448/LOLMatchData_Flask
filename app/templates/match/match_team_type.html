@@ -1,0 +1,38 @@
+{% extends "match.html"%}
+
+{% block title %}Match - All - team{% endblock %}
+
+{% block match %}
+
+    <!-- Add your dropdown menu -->
+    <form id="filterForm" method="POST" action="{{ url_for('match_blueprint.match_team_type')}}">
+        <label for="filterDropdown">Filter by Count:</label>
+        <select id="filterDropdown" name="filterValue">
+            <option value="5">Count > 5</option>
+            <option value="10">Count > 10</option>
+            <option value="15">Count > 15</option>
+            <option value="20">Count > 20</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <!-- display player database -->
+    {{df|safe}}
+
+{% endblock %}
+
+{% block script %}
+<script>
+    const element = document.getElementsByTagName("table")[0];
+    element.setAttribute('id','DataTable');
+    element.setAttribute('class','table table-striped display');
+
+    var table = $('#DataTable').DataTable( {
+        order: [[2, 'desc']],
+        paging: false,
+        columnDefs: [
+        {target: [], visible: false, searchable: false,},
+        ],
+    })
+</script>
+{% endblock %}

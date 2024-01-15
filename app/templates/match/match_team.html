@@ -1,0 +1,25 @@
+{% extends "match.html"%}
+
+{% block title %}Match - All - team{% endblock %}
+
+{% block match %}
+    <!-- display player database -->
+    {{df|safe}}
+
+{% endblock %}
+
+{% block script %}
+        <script>
+            const element = document.getElementsByTagName("table")[0];
+            element.setAttribute('id','DataTable');
+            element.setAttribute('class','table table-striped');
+
+            $('#DataTable').dataTable( {
+                order: [[0, 'asc']],
+                columnDefs: [
+                    {target: [], visible: false, searchable: false,},
+                ],
+                paging: false,
+            } );
+        </script>
+{% endblock %}

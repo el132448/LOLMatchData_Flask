@@ -1,8 +1,8 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
-from .models import Player, System, create_player_table, query_table_by_name, instantiate_all_player, get_puuid
+from .models import Player, System, Champion, create_player_table, query_table_by_name, instantiate_all_player, get_puuid
 from . import db
 from sqlalchemy import Table, update
-import threading
+import threading, requests
 from datetime import datetime
 
 panel_blueprint = Blueprint('panel_blueprint', __name__, template_folder="templates/panel", static_folder="static")
@@ -46,9 +46,9 @@ def master_update_function():
             # counter
             match_num -= 1
     
-    # finish function => button enable
-    button_disabled = False
-
+    # update champion database
+    # update_champion_db()
+            
     # update last update time in database
     system = System.query.all()
     now = datetime.now()
@@ -57,6 +57,34 @@ def master_update_function():
         system[0].last_update_time = dt_string
         db.session.commit()
         print(f"All match data is updated at {dt_string}!")
+
+    # finish function => button enable
+    button_disabled = False
+
+# update champion database
+def update_champion_db():
+    api_url = ("https://ddragon.leagueoflegends.com/cdn/14.1.1/data/en_US/champion.json")
+
+    resp = requests.get(api_url)
+    champion = resp.json()
+    
+    champion_list = list(champion['data'])
+
+    i = 1
+    for champ in champion_list:
+        champ_name = champ
+        if len(champion['data'][champ_name]['tags']) == 1:
+            tag1 = champion['data'][champ_name]['tags'][0]
+            tag2 = 'none'
+        else:
+            tag1 = champion['data'][champ_name]['tags'][0]
+            tag2 = champion['data'][champ_name]['tags'][1]
+
+        new_champ =  Champion(id=i,name=champ_name,tag1=tag1,tag2=tag2)
+        db.session.add(new_champ)
+        i = i + 1
+    db.session.commit()
+    print('Champion db updated!')
 
 @panel_blueprint.route('/panel/update/', methods=['GET', 'POST'])
 def panel_update():

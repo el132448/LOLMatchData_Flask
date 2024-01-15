@@ -14,3 +14,7 @@ table{
 tbody, td, tfoot, th, thead, tr {
     border-width: 1px;
 }
+.custom-color {
+    background-color: #ff0000; /* Replace with your desired background color */
+    color: #ffffff; /* Replace with your desired text color */
+}

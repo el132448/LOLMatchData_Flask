@@ -196,6 +196,12 @@ class Player(db.Model):
             db.session.execute(insert_statement)
             db.session.commit()
 
+class Champion(db.Model):
+    id = db.Column(db.Integer, primary_key=True, unique=True)
+    name = db.Column(db.String(1000), unique=True)
+    tag1 = db.Column(db.String(1000))
+    tag2 = db.Column(db.String(1000))
+    
     
 
 def get_puuid(summoner_name, tag_line, region):

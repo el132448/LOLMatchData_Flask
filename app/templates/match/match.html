@@ -2,7 +2,6 @@
 
 {% block CSS %}
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style_match.css') }}">
-
 {% endblock %}
 
 {% block title %}Match - All - stat{% endblock %}
@@ -17,12 +16,13 @@
         </span>
     </div>
         
-        
     {% block span %}
         <span style="display: flex">
-            <h5 >All</h5>
-            <a href="/match/">STAT(ARAM)</a>
-            <a href="/match/data">DATA</a>
+            <h5>All</h5>
+            <a href="/match/">ARAM STAT</a>
+            <a href="/match/team_type">TEAM TYPE</a>
+            <a href="/match/team">BY ID</a>
+            <a href="/match/data">ALL DATA</a>
         </span>
     {% endblock %}
 
@@ -30,8 +30,6 @@
         <!-- display player database -->
         {{df|safe}}
     {% endblock %}
-
-
 {% endblock %}
 
 {% block script %}
@@ -42,15 +40,26 @@
 
     $('#DataTable').dataTable( {
         order: [[2, 'desc']],
-        <!-- paging: false, -->
         columnDefs: [
-        {target: [0], visible: false, searchable: false,},
-        {width : "500px", targets: [0]},
+            {target: [0], visible: false, searchable: false,},
+            {width : "500px", targets: [0]},
+            {
+                targets: [2,5],
+                createdCell: function (td) {
+                    $(td).css('background-color', "LightPink")
+                }
+            },
+            {
+                targets: [7,10,12,15,17,20,22,25,27,30,32,35,37,40],
+                createdCell: function (td) {
+                    $(td).css('background-color', "Aquamarine")
+                }
+            },
         ],
         lengthMenu: [
                 [50, 100, -1],
                 [50, 100, 'All']
-        ],
+        ],  
     } );
 </script>
 {% endblock %}
